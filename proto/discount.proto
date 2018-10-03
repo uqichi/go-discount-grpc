@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/timestamp.proto";
+
+service DiscountService {
+    rpc GetOne (GetOneRequest) returns (GetOneResponse);
+    rpc CreateForAll (CreateForAllRequest) returns (CreateResponse);
+    rpc CreateForOne (CreateForOneRequest) returns (CreateResponse);
+    rpc CreateForSet (CreateForSetRequest) returns (CreateResponse);
+    rpc CreateForBuyAForB (CreateForBuyAForBRequest) returns (CreateResponse);
+    rpc CreateForBuyXGetOne (CreateForBuyXGetRequest) returns (CreateResponse);
+    rpc CreateForBuyXGetMore (CreateForBuyXGetRequest) returns (CreateResponse);
+    rpc CreateForBuyXGetTotal (CreateForBuyXGetRequest) returns (CreateResponse);
+}
+
+message DiscountBase {
+    enum Kind {
+        UNKNOWN = 0;
+        NORMAL = 1;
+        NEW = 2;
+        OUTLET = 3;
+        MEMBER = 4;
+    }
+    Kind kind = 1;
+    oneof value {
+        uint32 amount = 2;
+        float rate = 3;
+    }
+    string message = 4;
+    google.protobuf.Timestamp deadline = 5;
+    bool isMember = 6;
+}
+
+message GetOneRequest {
+    uint64 tenantID = 1;
+    uint64 prdouctID = 2;
+}
+
+message GetOneResponse {
+    oneof discount {
+        DiscountForAll discountForAll = 1;
+        DiscountForOne discountForOne = 2;
+        DiscountForSet discountForSet = 3;
+        DiscountForBuyAForB discountForBuyAForB = 4;
+        DiscountForBuyXGet discountForBuyXGetOne = 5;
+        DiscountForBuyXGet discountForBuyXGetMore = 6;
+        DiscountForBuyXGet discountForBuyXGetTotal = 7;
+    }
+}
+
+message DiscountForAll {
+    DiscountBase base = 1;
+}
+
+message CreateForAllRequest {
+    uint64 tenantID = 1;
+    DiscountForAll discountForAll = 2;
+}
+
+message CreateResponse {
+    uint64 id = 1;
+}
+
+message DiscountForOne {
+    DiscountBase base = 1;
+    uint64 prdouctID = 2;
+}
+
+message CreateForOneRequest {
+    uint64 tenantID = 1;
+    DiscountForOne discountForOne = 2;
+}
+
+message DiscountForSet {
+    DiscountBase base = 1;
+    repeated uint64 prdouctIDs = 2;
+}
+
+message CreateForSetRequest {
+    uint64 tenantID = 1;
+    DiscountForSet discountForSet = 2;
+}
+
+message DiscountForBuyAForB {
+    DiscountBase base = 1;
+    uint64 prdouctAID = 2;
+    uint64 prdouctBID = 3;
+}
+
+message CreateForBuyAForBRequest {
+    uint64 tenantID = 1;
+    DiscountForBuyAForB discountForBuyAForB = 2;
+}
+
+message DiscountForBuyXGet {
+    DiscountBase base = 1;
+    uint64 prdouctID = 2;
+    uint32 xNum = 3;
+}
+
+message CreateForBuyXGetRequest {
+    uint64 tenantID = 1;
+    DiscountForBuyXGet discountForBuyXGet = 2;
+}
